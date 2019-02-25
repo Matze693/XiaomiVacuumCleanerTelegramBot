@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <telegram_bot>
+        <token>TELEGRAM_BOT_TOKEN</token>
+    </telegram_bot>
+    <xiaomi_vacuum_cleaner>
+        <settings>
+            <token>XIAOMI_VACUUM_CLEANER_TOKEN</token>
+            <ip_address>xxx.xxx.xxx.xxx</ip_address>
+        </settings>
+        <zone_cleaning>
+            <zero_point_offset x="1000" y="2000"/>
+            <doors>
+                <door name="Door1">
+                    <bottom_left x="0" y="0"/>
+                    <top_right x="1000" y="1000"/>
+                </door>
+                <door name="Door2">
+                    <bottom_left x="2000" y="2000"/>
+                    <top_right x="3000" y="3000"/>
+                </door>
+            </doors>
+            <rooms>
+                <room name="Room1">
+                    <bottom_left x="4000" y="4000"/>
+                    <top_right x="5000" y="5000"/>
+                </room>
+                <room name="Room2">
+                    <bottom_left x="6000" y="6000"/>
+                    <top_right x="7000" y="7000"/>
+                </room>
+            </rooms>
+            <areas>
+                <area name="Area1">
+                    <bottom_left x="8000" y="8000"/>
+                    <top_right x="9000" y="9000"/>
+                </area>
+            </areas>
+            <zones>
+                <zone name="Zone1">
+                    <area name="Area1"/>
+                </zone>
+                <zone name="Zone2">
+                    <room name="Room1"/>
+                </zone>
+                <zone name="Zone3">
+                    <door name="Door1"/>
+                    <door name="Door2"/>
+                    <room name="Room2"/>
+                </zone>
+            </zones>
+        </zone_cleaning>
+    </xiaomi_vacuum_cleaner>
+</config>
