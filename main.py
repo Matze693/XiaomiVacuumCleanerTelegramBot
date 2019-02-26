@@ -1,11 +1,14 @@
-from miio.vacuum import Vacuum
-from telegram import ReplyKeyboardMarkup, Bot, Update, ReplyKeyboardRemove
-from telegram.ext import Updater, CommandHandler, ConversationHandler, RegexHandler
-from xml_parser import XMLParser
 import logging
 
+from telegram import Bot, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram.ext import ConversationHandler, Updater, CommandHandler, RegexHandler
+
+from xml_parser import XMLParser
+from xvc_helper import XVCHelper
+
+
 # constants
-SELECT_ZONE = range(1)
+SELECT_ZONE, _ = range(2)
 
 # logging
 logging.basicConfig(format='%(asctime)s - %(levelname)6s - %(message)s', level=logging.INFO)
@@ -17,15 +20,7 @@ class XiaomiBot(object):
     def __init__(self, xml_parser: XMLParser):
         self.__xml_parser = xml_parser
         config_xiaomi = self.__xml_parser.parse_xiaomi_vacuum_cleaner_settings()
-        self.__ip = config_xiaomi.ip_address
-        self.__token = config_xiaomi.token
-
-    def clean(self, zone: list) -> bool:
-        vacuum = Vacuum(ip=self.__ip, token=self.__token, start_id=1)
-        zones_list = [x.get_list() for x in zone]
-        result = vacuum.zoned_clean(zones_list)
-        vacuum.pause()
-        return result == ['ok']
+        self.__vacuum = XVCHelper(config_xiaomi.ip_address, config_xiaomi.token)
 
     def start(self, bot: Bot, update: Update) -> int:
         self.__xml_parser.reload()
@@ -39,7 +34,7 @@ class XiaomiBot(object):
         zone = update.message.text
         self.__xml_parser.reload()
         zones = self.__xml_parser.parse_zones()
-        if self.clean(zones[zone.upper()]):
+        if self.__vacuum.start_zone_cleaning(zones[zone.upper()]):
             update.message.reply_text('Start cleaning {}...'.format(zone.lower()))
         else:
             update.message.reply_text('Error')
@@ -47,10 +42,9 @@ class XiaomiBot(object):
 
     def cancel(self, bot: Bot, update: Update) -> int:
         update.message.reply_text('Bye!', reply_markup=ReplyKeyboardRemove())
-
         return ConversationHandler.END
 
-    def error(self, bot: Bot, update: Update, message: str):
+    def error(self, bot: Bot, update: Update, message: str) -> None:
         logger.warning('Update "{}" caused error "{}"!'.format(update, message))
 
 
