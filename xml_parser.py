@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ElementTree
 from typing import Any, Type, Dict, List
 
 from xvc_util import Point, Rectangle, Door, Room, Area
@@ -22,10 +22,10 @@ class XMLParser(object):
         self.reload()
 
     def reload(self) -> None:
-        self.__root = ET.parse(self.__path).getroot()
+        self.__root = ElementTree.parse(self.__path).getroot()
 
     @staticmethod
-    def try_get_attribute(element: ET, attribute_name: str, return_type: Any = str) -> Any:
+    def try_get_attribute(element: ElementTree, attribute_name: str, return_type: Any = str) -> Any:
         if attribute_name not in element.attrib:
             raise AttributeError('Attribute "{}" for element "{}" is missing!'.format(attribute_name, element.tag))
         return return_type(element.get(attribute_name))
