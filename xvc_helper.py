@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List
+from typing import List, Tuple
 
 from miio import Vacuum
 
@@ -32,6 +32,16 @@ class XVCHelper(object):
         """
         self.__vacuum = Vacuum(ip=ip, token=token, start_id=1)
 
+    def status(self) -> Tuple[bool, str]:
+        """
+        Gets current status.
+
+        :return: True on success, otherwise False.
+        :return:
+        """
+        vacuum_status = self.__vacuum.status()
+        return True, vacuum_status.state
+
     def pause(self) -> bool:
         """
         Pause vacuum cleaner.
@@ -50,7 +60,7 @@ class XVCHelper(object):
         """
         zones_list = [zone.get_list() for zone in zones]
         result = self.__vacuum.zoned_clean(zones_list)
-        self.__vacuum.pause()  # for debugging
+        self.pause()  # for debugging
         return result == XVCHelper.__RESPONSE_SUCCEEDED
 
     def set_fan_level(self, fan_level: FanLevel) -> bool:
