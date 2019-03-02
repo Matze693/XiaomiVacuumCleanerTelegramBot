@@ -1,51 +1,83 @@
 import logging
+from typing import List, Dict
 
 from telegram import Bot, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ConversationHandler, Updater, CommandHandler, RegexHandler
 
 from xml_parser import XMLParser
 from xvc_helper import XVCHelper
+from xvc_util import Rectangle
 
 
 # constants
-SELECT_ZONE, _ = range(2)
+MAIN_BUTTONS = ['Status', 'ZoneCleaning']
+FAN_BUTTONS = [value.name for value in XVCHelper.FanLevel]
+
+MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
 
 # logging
 logging.basicConfig(format='%(asctime)s - %(levelname)6s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class XiaomiBot(object):
+# functions
+def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
+    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+    if header_buttons:
+        menu.insert(0, header_buttons)
+    if footer_buttons:
+        menu.append(footer_buttons)
+    return menu
 
-    def __init__(self, xml_parser: XMLParser):
-        self.__xml_parser = xml_parser
-        config_xiaomi = self.__xml_parser.parse_xiaomi_vacuum_cleaner_settings()
-        self.__vacuum = XVCHelper(config_xiaomi.ip_address, config_xiaomi.token)
 
-    def start(self, bot: Bot, update: Update) -> int:
-        self.__xml_parser.reload()
-        zones = self.__xml_parser.parse_zones()
-        buttons = [[zone.title()] for zone in zones.keys()]
-        buttons = ReplyKeyboardMarkup(buttons, one_time_keyboard=True)
-        update.message.reply_text('Select cleaning zone?', reply_markup=buttons)
+# classes
+class XVCBot(object):
+
+    def __init__(self, vacuum: XVCHelper, zones: Dict[str, List[Rectangle]]):
+        self.__vacuum = vacuum
+        self.__zones = zones
+        self.__main_buttons = ReplyKeyboardMarkup(build_menu(MAIN_BUTTONS, 1),
+                                                  one_time_keyboard=True)
+        self.__fan_buttons = ReplyKeyboardMarkup(build_menu(FAN_BUTTONS, 1),
+                                                 one_time_keyboard=True)
+        self.__zone_buttons = ReplyKeyboardMarkup(build_menu([zone.title() for zone in self.__zones.keys()], 1),
+                                                  one_time_keyboard=True)
+
+    def start(self, _: Bot, update: Update) -> int:
+        update.message.reply_text('Main menu', reply_markup=self.__main_buttons)
+        return MAIN_MENU
+
+    def status(self, _: Bot, update: Update) -> int:
+        result, state = self.__vacuum.status()
+        if result:
+            message = 'State: {}'.format(state)
+        else:
+            message = 'Error'
+        update.message.reply_text(message, reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
+
+    def select_fan(self, _: Bot, update: Update) -> int:
+        update.message.reply_text('Select fan speed!', reply_markup=self.__fan_buttons)
+        return SELECT_FAN
+
+    def select_zone(self, _: Bot, update: Update) -> int:
+        level = update.message.text
+        self.__vacuum.set_fan_level(XVCHelper.FanLevel[level])
+        update.message.reply_text('Select zone!', reply_markup=self.__zone_buttons)
         return SELECT_ZONE
 
-    def select_zone(self, bot: Bot, update: Update) -> int:
+    def cleaning(self, _: Bot, update: Update) -> int:
         zone = update.message.text
-        self.__xml_parser.reload()
-        zones = self.__xml_parser.parse_zones()
-        if self.__vacuum.start_zone_cleaning(zones[zone.upper()]):
-            update.message.reply_text('Start cleaning {}...'.format(zone.lower()))
+        if self.__vacuum.start_zone_cleaning(self.__zones[zone.upper()]):
+            message = 'Start cleaning {}...'.format(zone.lower())
         else:
-            update.message.reply_text('Error')
+            message = 'Error'
+        update.message.reply_text(message, reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
-    def cancel(self, bot: Bot, update: Update) -> int:
-        update.message.reply_text('Bye!', reply_markup=ReplyKeyboardRemove())
-        return ConversationHandler.END
-
-    def error(self, bot: Bot, update: Update, message: str) -> None:
-        logger.warning('Update "{}" caused error "{}"!'.format(update, message))
+    def error(self, _: Bot, update: Update, message: str) -> None:
+        update.message.reply_text('Update "{}" caused error "{}"!'.format(update, message),
+                                  reply_markup=self.__main_buttons)
 
 
 def main():
@@ -54,22 +86,33 @@ def main():
     xml_parser = XMLParser('config.xml')
     config_bot = xml_parser.parse_telegram_bot()
 
-    xiaomi_bot = XiaomiBot(xml_parser)
+    config_xiaomi = xml_parser.parse_xiaomi_vacuum_cleaner_settings()
+    vacuum = XVCHelper(config_xiaomi.ip_address, config_xiaomi.token)
+
+    zones = xml_parser.parse_zones()
+
+    xvc_bot = XVCBot(vacuum, zones)
 
     updater = Updater(token=config_bot.token)
     dispatcher = updater.dispatcher
 
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', xiaomi_bot.start)],
-        states={
-            SELECT_ZONE: [RegexHandler('^({})$'.format('|'.join(
-                    [zone.title() for zone in xml_parser.parse_zones().keys()])), xiaomi_bot.select_zone)]
-        },
-        fallbacks=[CommandHandler('cancel', xiaomi_bot.cancel)]
+    conversation_handler = ConversationHandler(
+            entry_points=[CommandHandler('start', xvc_bot.start)],
+            states={
+                MAIN_MENU: [RegexHandler('^({})$'.format('Status'),
+                                         xvc_bot.status),
+                            RegexHandler('^({})$'.format('ZoneCleaning'),
+                                         xvc_bot.select_fan)],
+                SELECT_FAN: [RegexHandler('^({})$'.format('|'.join(FAN_BUTTONS)),
+                                          xvc_bot.select_zone)],
+                SELECT_ZONE: [RegexHandler('^({})$'.format('|'.join([zone.title() for zone in zones.keys()])),
+                                           xvc_bot.cleaning)]
+            },
+            fallbacks=[]
     )
 
-    dispatcher.add_handler(conv_handler)
-    dispatcher.add_error_handler(xiaomi_bot.error)
+    dispatcher.add_handler(conversation_handler)
+    dispatcher.add_error_handler(xvc_bot.error)
 
     updater.start_polling()
     updater.idle()
