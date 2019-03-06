@@ -13,7 +13,7 @@ class XVCHelper(object):
 
     class FanLevel(Enum):
         """
-        Enum or distinct fan levels.
+        Enum for distinct fan levels.
         """
         Quiet = 38
         Balanced = 60
@@ -60,7 +60,7 @@ class XVCHelper(object):
         """
         zones_list = [zone.get_list() for zone in zones]
         result = self.__vacuum.zoned_clean(zones_list)
-        self.pause()  # for debugging
+        # self.pause()  # for debugging
         return result == XVCHelper.__RESPONSE_SUCCEEDED
 
     def set_fan_level(self, fan_level: FanLevel) -> bool:
