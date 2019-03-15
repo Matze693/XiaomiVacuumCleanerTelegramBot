@@ -43,6 +43,10 @@ class XVCBot(object):
         self.__zone_buttons = ReplyKeyboardMarkup(build_menu([zone.title() for zone in self.__zones.keys()], 1),
                                                   one_time_keyboard=True)
 
+    def __finish(self, update: Update, message: str) -> int:
+        update.message.reply_text(message, reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
+
     def start(self, _: Bot, update: Update) -> int:
         update.message.reply_text('Main menu', reply_markup=self.__main_buttons)
         return MAIN_MENU
@@ -53,8 +57,7 @@ class XVCBot(object):
             message = 'State: {}'.format(state)
         else:
             message = 'Error'
-        update.message.reply_text(message, reply_markup=ReplyKeyboardRemove())
-        return ConversationHandler.END
+        return self.__finish(update, message)
 
     def select_fan(self, _: Bot, update: Update) -> int:
         update.message.reply_text('Select fan speed!', reply_markup=self.__fan_buttons)
@@ -72,8 +75,8 @@ class XVCBot(object):
             message = 'Start cleaning {}...'.format(zone.lower())
         else:
             message = 'Error'
-        update.message.reply_text(message, reply_markup=ReplyKeyboardRemove())
-        return ConversationHandler.END
+        return self.__finish(update, message)
+
 
     def error(self, _: Bot, update: Update, message: str) -> None:
         update.message.reply_text('Update "{}" caused error "{}"!'.format(update, message),
