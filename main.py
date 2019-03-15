@@ -77,6 +77,9 @@ class XVCBot(object):
             message = 'Error'
         return self.__finish(update, message)
 
+    def cancel(self, _: Bot, update: Update) -> int:
+        message = 'Canceled...'
+        return self.__finish(update, message)
 
     def error(self, _: Bot, update: Update, message: str) -> None:
         update.message.reply_text('Update "{}" caused error "{}"!'.format(update, message),
@@ -111,7 +114,7 @@ def main():
                 SELECT_ZONE: [RegexHandler('^({})$'.format('|'.join([zone.title() for zone in zones.keys()])),
                                            xvc_bot.cleaning)]
             },
-            fallbacks=[]
+            fallbacks=[CommandHandler('cancel', xvc_bot.cancel)]
     )
 
     dispatcher.add_handler(conversation_handler)
