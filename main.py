@@ -45,11 +45,11 @@ class XVCBot(object):
     def __init__(self, vacuum: XVCHelper, zones: Dict[str, List[Rectangle]]):
         self.__vacuum = vacuum
         self.__zones = zones
-        self.__main_buttons = ReplyKeyboardMarkup(build_menu(MAIN_BUTTONS, 1),
+        self.__main_buttons = ReplyKeyboardMarkup(build_menu(MAIN_BUTTONS),
                                                   one_time_keyboard=True)
-        self.__fan_buttons = ReplyKeyboardMarkup(build_menu(FAN_BUTTONS, 1),
+        self.__fan_buttons = ReplyKeyboardMarkup(build_menu(FAN_BUTTONS),
                                                  one_time_keyboard=True)
-        self.__zone_buttons = ReplyKeyboardMarkup(build_menu([zone.title() for zone in self.__zones.keys()], 1),
+        self.__zone_buttons = ReplyKeyboardMarkup(build_menu([zone.title() for zone in self.__zones.keys()]),
                                                   one_time_keyboard=True)
 
     def __finish(self, update: Update, message: str) -> int:
@@ -81,7 +81,7 @@ class XVCBot(object):
     def cleaning(self, _: Bot, update: Update) -> int:
         zone = update.message.text
         if self.__vacuum.start_zone_cleaning(self.__zones[zone.upper()]):
-            message = 'Start cleaning {}...'.format(zone.lower())
+            message = 'Start cleaning {}...'.format(zone)
         else:
             message = 'Error'
         return self.__finish(update, message)
