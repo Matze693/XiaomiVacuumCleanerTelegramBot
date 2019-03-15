@@ -21,8 +21,17 @@ logger = logging.getLogger(__name__)
 
 
 # functions
-def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
-    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+def build_menu(buttons, columns=2, header_buttons=None, footer_buttons=None):
+    """
+    Creates a telegram menu with buttons.
+
+    :param buttons: List of buttons.
+    :param columns: Number of columns
+    :param header_buttons: Special header buttons.
+    :param footer_buttons: Special footer buttons.
+    :return: List of buttons.
+    """
+    menu = [buttons[i:i + columns] for i in range(0, len(buttons), columns)]
     if header_buttons:
         menu.insert(0, header_buttons)
     if footer_buttons:
