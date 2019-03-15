@@ -70,10 +70,10 @@ class Rectangle(XVCListable, metaclass=ABCMeta):
         return self.bottom_left.get_list() + self.top_right.get_list()
 
     def __str__(self) -> str:
-        string_builder = ''
+        string_builder = '{}: {{'.format(self.__class__.__name__)
         if self.name is not None:
             string_builder += '{}: '.format(self.name)
-        string_builder += '[{}, {}]'.format(self.bottom_left, self.top_right)
+        string_builder += '[{}, {}]}}'.format(self.bottom_left, self.top_right)
         return string_builder
 
 
