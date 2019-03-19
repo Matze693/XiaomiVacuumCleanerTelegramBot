@@ -5,7 +5,7 @@ from telegram import Bot, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ConversationHandler, Updater, CommandHandler, RegexHandler
 
 from xml_parser import XMLParser
-from xvc_helper import XVCHelper, XVCHelperSimulator
+from xvc_helper import XVCHelper, XVCHelperBase, XVCHelperSimulator
 from xvc_util import Rectangle
 
 
@@ -41,7 +41,7 @@ def build_menu(buttons, columns=2, header_buttons=None, footer_buttons=None):
 # classes
 class XVCBot(object):
 
-    def __init__(self, vacuum: XVCHelper, zones: Dict[str, List[Rectangle]]):
+    def __init__(self, vacuum: XVCHelperBase, zones: Dict[str, List[Rectangle]]):
         self.__vacuum = vacuum
         self.__zones = zones
         self.__main_buttons = ReplyKeyboardMarkup(build_menu(MAIN_BUTTONS),
