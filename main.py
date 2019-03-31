@@ -10,7 +10,7 @@ from xvc_util import Rectangle
 
 
 # constants
-MAIN_BUTTONS = ['Status', 'ZoneCleaning']
+MAIN_BUTTONS = ['Status', 'Home', 'ZoneCleaning']
 FAN_BUTTONS = [value.name for value in XVCHelper.FanLevel]
 
 MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
@@ -67,6 +67,13 @@ class XVCBot(object):
             message = 'Error'
         return self.__finish(update, message)
 
+    def home(self, _: Bot, update: Update) -> int:
+        if self.__vacuum.home():
+            message = 'Vacuum cleaner goes back to the dock...'
+        else:
+            message = 'Error'
+        return self.__finish(update, message)
+
     def select_fan(self, _: Bot, update: Update) -> int:
         update.message.reply_text('Select fan speed!', reply_markup=self.__fan_buttons)
         return SELECT_FAN
@@ -115,6 +122,8 @@ def main():
             states={
                 MAIN_MENU: [RegexHandler('^({})$'.format('Status'),
                                          xvc_bot.status),
+                            RegexHandler('^({})$'.format('Home'),
+                                         xvc_bot.home),
                             RegexHandler('^({})$'.format('ZoneCleaning'),
                                          xvc_bot.select_fan)],
                 SELECT_FAN: [RegexHandler('^({})$'.format('|'.join(FAN_BUTTONS)),

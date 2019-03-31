@@ -45,6 +45,15 @@ class XVCHelperBase(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
+    def home(self) -> bool:
+        """
+        Stops cleaning and sends vacuum cleaner back to the dock.
+
+        :return: True on success, otherwise False.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
     def start_zone_cleaning(self, zones: List[XVCListable]) -> bool:
         """
         Start the zone cleanup.
@@ -97,6 +106,15 @@ class XVCHelperSimulator(XVCHelperBase):
         :return: True on success, otherwise False.
         """
         logging.info('XVCHelperSimulator: pause()')
+        return True
+
+    def home(self) -> bool:
+        """
+        Stops cleaning and sends vacuum cleaner back to the dock.
+
+        :return: True on success, otherwise False.
+        """
+        logging.info('XVCHelperSimulator: home()')
         return True
 
     def start_zone_cleaning(self, zones: List[XVCListable]) -> bool:
@@ -153,6 +171,15 @@ class XVCHelper(XVCHelperBase):
         :return: True on success, otherwise False.
         """
         result = self.__vacuum.pause()
+        return result == XVCHelper.RESPONSE_SUCCEEDED
+
+    def home(self) -> bool:
+        """
+        Stops cleaning and sends vacuum cleaner back to the dock.
+
+        :return: True on success, otherwise False.
+        """
+        result = self.__vacuum.home()
         return result == XVCHelper.RESPONSE_SUCCEEDED
 
     def start_zone_cleaning(self, zones: List[XVCListable]) -> bool:
