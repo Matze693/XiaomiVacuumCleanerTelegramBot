@@ -5,7 +5,7 @@ from telegram import Bot, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ConversationHandler, Updater, CommandHandler, RegexHandler
 
 from xml_parser import XMLParser
-from xvc_helper import XVCHelper, XVCHelperBase, XVCHelperSimulator
+from xvc_helper import XVCHelper, XVCHelperBase
 from xvc_util import Rectangle
 
 
@@ -178,7 +178,7 @@ def main():
     config_bot = xml_parser.parse_telegram_bot()
 
     config_xiaomi = xml_parser.parse_xiaomi_vacuum_cleaner_settings()
-    vacuum = XVCHelperSimulator(config_xiaomi.ip_address, config_xiaomi.token)
+    vacuum = XVCHelper(config_xiaomi.ip_address, config_xiaomi.token)
 
     zones = xml_parser.parse_zones()
 
