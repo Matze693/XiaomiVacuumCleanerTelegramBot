@@ -80,7 +80,7 @@ class XVCBot(object):
 
     def select_zone(self, _: Bot, update: Update) -> int:
         level = update.message.text
-        self.__vacuum.set_fan_level(XVCHelper.FanLevel[level])
+        self.__vacuum.set_fan_level(XVCHelperBase.FanLevel[level])
         update.message.reply_text('Select zone!', reply_markup=self.__zone_buttons)
         return SELECT_ZONE
 
