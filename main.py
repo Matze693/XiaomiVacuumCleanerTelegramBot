@@ -42,6 +42,13 @@ def build_menu(buttons, columns=2, header_buttons=None, footer_buttons=None):
 class XVCBot(object):
 
     def __init__(self, vacuum: XVCHelperBase, zones: Dict[str, List[Rectangle]]):
+        """
+        Initializes the Xiaomi Vacuum Cleaner Bot.
+        This bot is used as an conversation bot with various states.
+
+        :param vacuum: Reference to vacuum cleaner.
+        :param zones: Dictionary with all cleaning zones.
+        """
         self.__vacuum = vacuum
         self.__zones = zones
         self.__main_buttons = ReplyKeyboardMarkup(build_menu(MAIN_BUTTONS),
@@ -52,14 +59,35 @@ class XVCBot(object):
                                                   one_time_keyboard=True)
 
     def __finish(self, update: Update, message: str) -> int:
+        """
+        Helper function to finish the conversation.
+
+        :param update: Bot update.
+        :param message: Message to send.
+        :return: State for conversation end.
+        """
         update.message.reply_text(message, reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
     def start(self, _: Bot, update: Update) -> int:
+        """
+        Starts the conversation with the main menu.
+
+        :param _: Unused parameter.
+        :param update: Bot update.
+        :return: State for main menu.
+        """
         update.message.reply_text('Main menu', reply_markup=self.__main_buttons)
         return MAIN_MENU
 
     def status(self, _: Bot, update: Update) -> int:
+        """
+        Reads the current status of the vacuum cleaner.
+
+        :param _: Unused parameter.
+        :param update: Bot update.
+        :return: State for conversation end.
+        """
         result, state = self.__vacuum.status()
         if result:
             message = 'State: {}'.format(state)
@@ -68,6 +96,13 @@ class XVCBot(object):
         return self.__finish(update, message)
 
     def home(self, _: Bot, update: Update) -> int:
+        """
+        Stops cleaning and sends vacuum cleaner back to the dock.
+
+        :param _: Unused parameter.
+        :param update:  Bot update.
+        :return: State for conversation end.
+        """
         if self.__vacuum.home():
             message = 'Vacuum cleaner goes back to the dock...'
         else:
@@ -75,16 +110,37 @@ class XVCBot(object):
         return self.__finish(update, message)
 
     def select_fan(self, _: Bot, update: Update) -> int:
+        """
+        Creates the menu for fan speed.
+
+        :param _: Unused parameter.
+        :param update: Bot update.
+        :return: State for selecting fan speed.
+        """
         update.message.reply_text('Select fan speed!', reply_markup=self.__fan_buttons)
         return SELECT_FAN
 
     def select_zone(self, _: Bot, update: Update) -> int:
+        """
+        Creates the menu for cleaning zones.
+
+        :param _: Unused parameter.
+        :param update: Bot update.
+        :return: State for selecting cleaning zone.
+        """
         level = update.message.text
         self.__vacuum.set_fan_level(XVCHelperBase.FanLevel[level])
         update.message.reply_text('Select zone!', reply_markup=self.__zone_buttons)
         return SELECT_ZONE
 
     def cleaning(self, _: Bot, update: Update) -> int:
+        """
+        Starts cleaning.
+
+        :param _: Unused parameter.
+        :param update: Bot update.
+        :return: State for conversation end.
+        """
         zone = update.message.text
         if self.__vacuum.start_zone_cleaning(self.__zones[zone.upper()]):
             message = 'Start cleaning {}...'.format(zone)
@@ -93,10 +149,24 @@ class XVCBot(object):
         return self.__finish(update, message)
 
     def cancel(self, _: Bot, update: Update) -> int:
+        """
+        Cancels the current conversation.
+
+        :param _: Unused parameter.
+        :param update: Bot update.
+        :return: State for conversation end.
+        """
         message = 'Canceled...'
         return self.__finish(update, message)
 
     def error(self, _: Bot, update: Update, message: str) -> None:
+        """
+        Helper function to handle any runtime errors.
+
+        :param _: Unused parameter.
+        :param update: Bot update.
+        :param message: Error message.
+        """
         update.message.reply_text('Update "{}" caused error "{}"!'.format(update, message),
                                   reply_markup=self.__main_buttons)
 
