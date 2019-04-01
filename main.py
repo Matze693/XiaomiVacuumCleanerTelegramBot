@@ -1,4 +1,5 @@
 import logging
+from functools import wraps
 from typing import List, Dict
 
 from telegram import Bot, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -14,6 +15,8 @@ MAIN_BUTTONS = ['Status', 'Home', 'ZoneCleaning']
 FAN_BUTTONS = [value.name for value in XVCHelper.FanLevel]
 
 MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
+
+LIST_OF_ADMINS = [110086856]
 
 # logging
 logging.basicConfig(format='%(asctime)s - %(levelname)6s - %(message)s', level=logging.INFO)
@@ -36,6 +39,23 @@ def build_menu(buttons, columns=2, header_buttons=None, footer_buttons=None):
     if footer_buttons:
         menu.append(footer_buttons)
     return menu
+
+
+def restricted(func):
+    """
+    Decorator to restrict access of bot.
+
+    :param func: Function reference.
+    :return: Wrapper function.
+    """
+    @wraps(func)
+    def wrapped(self, bot: Bot, update: Update, *args: List, **kwargs: Dict):
+        user_id = update.effective_user.id
+        if user_id not in LIST_OF_ADMINS:
+            update.message.reply_text('Access denied for you ({})!'.format(user_id))
+            return
+        return func(self, bot, update, *args, **kwargs)
+    return wrapped
 
 
 # classes
@@ -69,6 +89,7 @@ class XVCBot(object):
         update.message.reply_text(message, reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
+    @restricted
     def start(self, _: Bot, update: Update) -> int:
         """
         Starts the conversation with the main menu.
