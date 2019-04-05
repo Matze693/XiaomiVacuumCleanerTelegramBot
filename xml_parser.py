@@ -14,6 +14,7 @@ class XMLConfiguration(object):
         Class to store configuration for telegram bot.
         """
         token = None
+        users = {}
 
     class XiaomiVacuumCleanerSettings(object):
         """
@@ -67,6 +68,9 @@ class XMLParser(object):
         """
         result = XMLConfiguration.TelegramBotSettings()
         result.token = self.__root.find('telegram_bot').find('token').text
+        users = self.__root.find('telegram_bot').find('users')
+        for user in users:
+            result.users[XMLParser.try_get_attribute(user, 'name')] = int(user.text)
         return result
 
     def parse_xiaomi_vacuum_cleaner_settings(self) -> XMLConfiguration.XiaomiVacuumCleanerSettings:

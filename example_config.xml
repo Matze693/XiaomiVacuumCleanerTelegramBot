@@ -2,6 +2,10 @@
 <config>
     <telegram_bot>
         <token>TELEGRAM_BOT_TOKEN</token>
+        <users>
+            <user name="User1 name">123456789</user>
+            <user name="User2 name">987654321</user>
+        </users>
     </telegram_bot>
     <xiaomi_vacuum_cleaner>
         <settings>
