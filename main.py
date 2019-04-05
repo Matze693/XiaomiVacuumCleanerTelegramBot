@@ -16,7 +16,7 @@ FAN_BUTTONS = [value.name for value in XVCHelper.FanLevel]
 
 MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
 
-LIST_OF_ADMINS = [110086856]
+LIST_OF_ADMINS = [110086856, 829623593]
 
 # logging
 logging.basicConfig(format='%(asctime)s - %(levelname)6s - %(message)s', level=logging.INFO)
