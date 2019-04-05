@@ -45,10 +45,12 @@ class AccessManager(object):
 
     @classmethod
     def add_users(cls, users: List) -> None:
-        cls.__valid_users.extend(users)
+        """
+        Adds new users to the list with valid users.
 
-    def __init(self):
-        pass
+        :param users: List with user ids.
+        """
+        cls.__valid_users.extend(users)
 
     def __call__(self, func: Callable) -> Callable:
         def wrapper(*args: List, **kwargs: Dict):
