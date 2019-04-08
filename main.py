@@ -10,13 +10,23 @@ from xvc_util import Rectangle
 
 
 # constants
+LOG_FILE = 'bot.log'
 MAIN_BUTTONS = ['Status', 'Home', 'ZoneCleaning']
 FAN_BUTTONS = [value.name for value in XVCHelper.FanLevel]
 
 MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
 
 # logging
-logging.basicConfig(format='%(asctime)s - %(levelname)6s - %(message)s', level=logging.INFO)
+console_logging = logging.StreamHandler().setLevel()
+console_logging.setLevel(logging.ERROR)
+
+file_logging = logging.FileHandler(LOG_FILE)
+file_logging.setLevel(logging.INFO)
+
+logging.basicConfig(level=logging.NOTSET,
+                    handlers=[console_logging, file_logging],
+                    format='%(asctime)s - %(levelname)6s - %(name)s - %(message)s'
+                    )
 
 
 # functions
