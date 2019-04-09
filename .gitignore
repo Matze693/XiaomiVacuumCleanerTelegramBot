@@ -8,3 +8,6 @@ __pycache__/
 
 # Configuration
 config.xml
+
+# Logging
+*.log
