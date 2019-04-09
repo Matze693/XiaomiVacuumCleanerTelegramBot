@@ -17,7 +17,7 @@ FAN_BUTTONS = [value.name for value in XVCHelper.FanLevel]
 MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
 
 # logging
-console_logging = logging.StreamHandler().setLevel()
+console_logging = logging.StreamHandler()
 console_logging.setLevel(logging.ERROR)
 
 file_logging = logging.FileHandler(LOG_FILE)
