@@ -86,6 +86,7 @@ class XVCHelperSimulator(XVCHelperBase):
         :param ip: IP address of the vacuum cleaner.
         :param token: Token of the vacuum cleaner.
         """
+        logging.info('Simulation: {}:{}'.format(ip, token))
         self.__ip = ip
         self.__token = token
 
@@ -96,8 +97,8 @@ class XVCHelperSimulator(XVCHelperBase):
         :return: True on success, otherwise False.
         :return:
         """
-        logging.info('XVCHelperSimulator: status()')
-        return True, 'State: Simulation'
+        logging.info('Simulation: status()')
+        return True, 'Simulation'
 
     def pause(self) -> bool:
         """
@@ -114,7 +115,7 @@ class XVCHelperSimulator(XVCHelperBase):
 
         :return: True on success, otherwise False.
         """
-        logging.info('XVCHelperSimulator: home()')
+        logging.info('Simulation: home()')
         return True
 
     def start_zone_cleaning(self, zones: List[XVCListable]) -> bool:
@@ -124,9 +125,9 @@ class XVCHelperSimulator(XVCHelperBase):
         :param zones: Different zones to clean.
         :return: True on success, otherwise False.
         """
-        logging.info('XVCHelperSimulator: start_zone_cleaning()')
+        logging.info('Simulation: start_zone_cleaning()')
         for zone in zones:
-            logging.info('XVCHelperSimulator: {}'.format(zone))
+            logging.info('Simulation: {}'.format(zone))
         return True
 
     def set_fan_level(self, fan_level: XVCHelperBase.FanLevel) -> bool:
@@ -136,7 +137,7 @@ class XVCHelperSimulator(XVCHelperBase):
         :param fan_level: New fan level.
         :return: True on success, otherwise False.
         """
-        logging.info('XVCHelperSimulator: set_fan_level()')
+        logging.info('Simulation: set_fan_level()')
         return True
 
 
