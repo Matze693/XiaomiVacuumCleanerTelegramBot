@@ -3,7 +3,7 @@ import logging
 from typing import List, Tuple
 from abc import abstractmethod, ABCMeta
 
-from miio import Vacuum
+from miio import Vacuum, DeviceException
 
 from xvc_util import XVCListable
 
@@ -154,6 +154,16 @@ class XVCHelper(XVCHelperBase):
         :param token: Token of the vacuum cleaner.
         """
         self.__vacuum = Vacuum(ip=ip, token=token, start_id=1)
+
+        # check connection
+        for _ in range(3):
+            try:
+                self.__vacuum.do_discover()
+                break
+            except DeviceException:
+                continue
+        else:
+            raise ConnectionError('Cannot establish connection to Vacuum Cleaner at {}'.format(ip))
 
     def status(self) -> Tuple[bool, str]:
         """

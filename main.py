@@ -224,7 +224,13 @@ def main():
     AccessManager.add_users(config_bot.users.values())
 
     config_xiaomi = xml_parser.parse_xiaomi_vacuum_cleaner_settings()
-    vacuum = XVCHelper(config_xiaomi.ip_address, config_xiaomi.token)
+
+    vacuum = None
+    try:
+        vacuum = XVCHelper(config_xiaomi.ip_address, config_xiaomi.token)
+    except ConnectionError as ex:
+        logging.fatal(str(ex))
+        exit()
 
     zones = xml_parser.parse_zones()
 
