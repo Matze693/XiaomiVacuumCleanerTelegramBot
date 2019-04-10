@@ -25,7 +25,7 @@ file_logging.setLevel(logging.INFO)
 
 logging.basicConfig(level=logging.NOTSET,
                     handlers=[console_logging, file_logging],
-                    format='%(asctime)23s - %(levelname)6s - %(funcName)25s - %(message)s'
+                    format='%(asctime)23s - %(levelname)8s - %(funcName)25s - %(message)s'
                     )
 
 
