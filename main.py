@@ -70,10 +70,11 @@ class AccessManager(object):
                     update = arg
                     break
             if update is None:
-                raise TypeError('No argument has type "Update"!')
+                logging.critical('No argument has type "Update"!')
             else:
                 user_id = update.effective_user.id
                 if user_id not in self.__valid_users:
+                    logging.warning('AccessManager: Access denied for {}'.format(user_id))
                     update.message.reply_text('Access denied for you ({})!'.format(user_id))
                     return
                 else:
@@ -120,6 +121,7 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for main menu.
         """
+        logging.info('Bot command: /start')
         update.message.reply_text('Main menu', reply_markup=self.__main_buttons)
         return MAIN_MENU
 
@@ -131,6 +133,7 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for conversation end.
         """
+        logging.info('Bot command: status')
         result, state = self.__vacuum.status()
         if result:
             message = 'State: {}'.format(state)
@@ -146,6 +149,7 @@ class XVCBot(object):
         :param update:  Bot update.
         :return: State for conversation end.
         """
+        logging.info('Bot command: home')
         if self.__vacuum.home():
             message = 'Vacuum cleaner goes back to the dock...'
         else:
@@ -160,6 +164,7 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for selecting fan speed.
         """
+        logging.info('Bot command: select fan')
         update.message.reply_text('Select fan speed!', reply_markup=self.__fan_buttons)
         return SELECT_FAN
 
@@ -171,6 +176,7 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for selecting cleaning zone.
         """
+        logging.info('Bot command: select zone')
         level = update.message.text
         self.__vacuum.set_fan_level(XVCHelperBase.FanLevel[level])
         update.message.reply_text('Select zone!', reply_markup=self.__zone_buttons)
@@ -184,6 +190,7 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for conversation end.
         """
+        logging.info('Bot command: cleaning')
         zone = update.message.text
         if self.__vacuum.start_zone_cleaning(self.__zones[zone.upper()]):
             message = 'Start cleaning {}...'.format(zone)
@@ -199,6 +206,7 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for conversation end.
         """
+        logging.info('Bot command: cancel')
         message = 'Canceled...'
         return self.__finish(update, message)
 
@@ -259,9 +267,11 @@ def main():
     dispatcher.add_handler(conversation_handler)
     dispatcher.add_error_handler(xvc_bot.error)
 
+    logging.info('start bot')
     updater.start_polling()
     updater.idle()
 
 
 if __name__ == '__main__':
+    logging.info('start program')
     main()
