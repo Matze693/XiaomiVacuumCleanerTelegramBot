@@ -12,7 +12,7 @@ from xvc_util import Rectangle
 # constants
 LOG_FILE = 'bot.log'
 MAIN_BUTTONS = ['Status', 'Home', 'ZoneCleaning']
-FAN_BUTTONS = [value.name for value in XVCHelper.FanLevel]
+FAN_BUTTONS = [value.name for value in XVCHelperBase.FanLevel]
 
 MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
 
