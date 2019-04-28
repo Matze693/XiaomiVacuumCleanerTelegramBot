@@ -11,6 +11,7 @@ from xvc_util import Rectangle
 
 # constants
 LOG_FILE = 'bot.log'
+SKIP_BUTTON = ['Skip']
 MAIN_BUTTONS = ['Status', 'Home', 'ZoneCleaning']
 FAN_BUTTONS = [value.name for value in XVCHelperBase.FanLevel]
 
@@ -96,7 +97,7 @@ class XVCBot(object):
         self.__zones = zones
         self.__main_buttons = ReplyKeyboardMarkup(build_menu(MAIN_BUTTONS),
                                                   one_time_keyboard=True)
-        self.__fan_buttons = ReplyKeyboardMarkup(build_menu(FAN_BUTTONS),
+        self.__fan_buttons = ReplyKeyboardMarkup(build_menu(FAN_BUTTONS, header_buttons=SKIP_BUTTON),
                                                  one_time_keyboard=True)
         self.__zone_buttons = ReplyKeyboardMarkup(build_menu([zone.title() for zone in self.__zones.keys()]),
                                                   one_time_keyboard=True)
@@ -178,7 +179,8 @@ class XVCBot(object):
         """
         logging.info('Bot command: select zone')
         level = update.message.text
-        self.__vacuum.set_fan_level(XVCHelperBase.FanLevel[level])
+        if level != SKIP_BUTTON[0]:
+            self.__vacuum.set_fan_level(XVCHelperBase.FanLevel[level])
         update.message.reply_text('Select zone!', reply_markup=self.__zone_buttons)
         return SELECT_ZONE
 
@@ -245,7 +247,7 @@ def main():
                                          xvc_bot.home),
                             RegexHandler('^({})$'.format('ZoneCleaning'),
                                          xvc_bot.select_fan)],
-                SELECT_FAN: [RegexHandler('^({})$'.format('|'.join(FAN_BUTTONS)),
+                SELECT_FAN: [RegexHandler('^({})$'.format('|'.join(FAN_BUTTONS + SKIP_BUTTON)),
                                           xvc_bot.select_zone)],
                 SELECT_ZONE: [RegexHandler('^({})$'.format('|'.join([zone.title() for zone in zones.keys()])),
                                            xvc_bot.cleaning)]
