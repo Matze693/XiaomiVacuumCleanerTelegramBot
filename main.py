@@ -210,17 +210,6 @@ class XVCBot(object):
         message = 'Canceled...'
         return self.__finish(update, message)
 
-    def error(self, _: Bot, update: Update, message: str) -> None:
-        """
-        Helper function to handle any runtime errors.
-
-        :param _: Unused parameter.
-        :param update: Bot update.
-        :param message: Error message.
-        """
-        update.message.reply_text('Update "{}" caused error "{}"!'.format(update, message),
-                                  reply_markup=self.__main_buttons)
-
 
 # main program
 def main():
@@ -265,7 +254,6 @@ def main():
     )
 
     dispatcher.add_handler(conversation_handler)
-    dispatcher.add_error_handler(xvc_bot.error)
 
     logging.info('start bot')
     updater.start_polling()
