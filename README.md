@@ -10,7 +10,7 @@ It would be nice if I could just tell Roborock, "Clean the living room.".
 ## Installation
 1. Install the python package [python-miio](https://github.com/rytilahti/python-miio)
 2. Get your token from the Roborock (see [python-miio.readthedocs.io](https://python-miio.readthedocs.io/en/latest/discovery.html))
-3. Create a telegram bot with [BotFahter](https://telegram.me/botfather).
+3. Create a telegram bot with [BotFather](https://telegram.me/botfather).
 4. Clone or download the XiaomiVacuumCleanerTelegramBot.
 5. Make a copy of the file `example_config.xml` -> `config.xml`.
 6. Insert the Roborock and Telegram Bot token into `config.xml`.
