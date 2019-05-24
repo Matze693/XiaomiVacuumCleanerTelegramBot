@@ -5,7 +5,7 @@ from telegram.ext import ConversationHandler, Updater, CommandHandler, RegexHand
 from access_manager import AccessManager
 from xml_parser import XMLParser
 from xvc_bot import XVCBot, MAIN_MENU, SELECT_FAN, SELECT_ZONE, FAN_BUTTONS, SKIP_BUTTON
-from xvc_helper import XVCHelper
+from xvc_helper import XVCHelper as VacuumHelper
 
 # constants
 LOG_FILE = 'bot.log'
@@ -35,7 +35,7 @@ def main():
 
     vacuum = None
     try:
-        vacuum = XVCHelper(config_xiaomi.ip_address, config_xiaomi.token)
+        vacuum = VacuumHelper(config_xiaomi.ip_address, config_xiaomi.token)
     except ConnectionError as ex:
         logging.fatal(str(ex))
         exit()
