@@ -1,4 +1,5 @@
 import logging
+from threading import Thread
 from typing import Dict, List
 
 from telegram import Bot, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -14,6 +15,17 @@ MAIN_BUTTONS = ['Status', 'Home', 'ZoneCleaning']
 FAN_BUTTONS = [value.name for value in XVCHelperBase.FanLevel]
 
 MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
+
+
+class StatusThread(Thread):
+
+    def __init__(self, vacuum: XVCHelperBase) -> None:
+        super().__init__()
+        self.daemon = True
+        self.__vacuum = vacuum
+
+    def run(self) -> None:
+        self.__vacuum.status()
 
 
 class XVCBot(object):
@@ -34,9 +46,10 @@ class XVCBot(object):
                                                  one_time_keyboard=True)
         self.__zone_buttons = ReplyKeyboardMarkup(XVCBot.build_menu([zone.title() for zone in self.__zones.keys()]),
                                                   one_time_keyboard=True)
+        self.__status_thread = None
 
     @staticmethod
-    def build_menu(buttons, columns=2, header_buttons=None, footer_buttons=None):
+    def build_menu(buttons, columns=2, header_buttons=None, footer_buttons=None) -> List:
         """
         Creates a telegram menu with buttons.
 
@@ -74,8 +87,21 @@ class XVCBot(object):
         :return: State for main menu.
         """
         logging.info('Bot command: /start')
+        self.__status_thread = StatusThread(self.__vacuum)
+        self.__status_thread.start()
         update.message.reply_text('Main menu', reply_markup=self.__main_buttons)
         return MAIN_MENU
+
+    def __wait_for_status(self, update: Update) -> None:
+        """
+        Waits until status thread is finish.
+
+        :param update: Bot update.
+        """
+        if self.__status_thread is not None:
+            if self.__status_thread.is_alive():
+                update.message.reply_text('Wait for status...')
+                self.__status_thread.join()
 
     def status(self, _: Bot, update: Update) -> int:
         """
@@ -85,6 +111,7 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for conversation end.
         """
+        self.__wait_for_status(update)
         logging.info('Bot command: status')
         result, state = self.__vacuum.status()
         if result:
@@ -101,6 +128,7 @@ class XVCBot(object):
         :param update:  Bot update.
         :return: State for conversation end.
         """
+        self.__wait_for_status(update)
         logging.info('Bot command: home')
         if self.__vacuum.home():
             message = 'Vacuum cleaner goes back to the dock...'
@@ -116,6 +144,7 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for selecting fan speed.
         """
+        self.__wait_for_status(update)
         logging.info('Bot command: select fan')
         update.message.reply_text('Select fan speed!', reply_markup=self.__fan_buttons)
         return SELECT_FAN
