@@ -1,7 +1,7 @@
-from enum import Enum
 import logging
-from typing import List, Tuple
 from abc import abstractmethod, ABCMeta
+from enum import Enum
+from typing import List, Tuple
 
 from miio import Vacuum, DeviceException
 
