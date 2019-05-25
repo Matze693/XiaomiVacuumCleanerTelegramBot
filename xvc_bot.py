@@ -18,17 +18,31 @@ MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
 
 
 class StatusThread(Thread):
+    """
+    Simple thread to get actual status from the vacuum cleaner.
+    """
 
     def __init__(self, vacuum: XVCHelperBase) -> None:
+        """
+        Initializes the thread to get actual status.
+
+        :param vacuum: Reference to vacuum cleaner.
+        """
         super().__init__()
         self.daemon = True
         self.__vacuum = vacuum
 
     def run(self) -> None:
+        """
+        Starts the thread.
+        """
         self.__vacuum.status()
 
 
 class XVCBot(object):
+    """
+    Xiaomi Vacuum Cleaner Bot.
+    """
 
     def __init__(self, vacuum: XVCHelperBase, zones: Dict[str, List[Rectangle]]):
         """
