@@ -114,7 +114,7 @@ class XVCBot(object):
         """
         if self.__status_thread is not None:
             if self.__status_thread.is_alive():
-                update.message.reply_text('Wait for status...')
+                update.message.reply_text('Wait for status...', reply_markup=ReplyKeyboardRemove())
                 self.__status_thread.join()
 
     def status(self, _: Bot, update: Update) -> int:
