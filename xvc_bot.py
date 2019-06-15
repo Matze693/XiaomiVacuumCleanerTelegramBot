@@ -6,7 +6,7 @@ from telegram import Bot, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ConversationHandler
 
 from access_manager import AccessManager
-from xvc_helper import XVCHelperBase
+from xvc_helper import XVCHelperBase, XVCHelperSimulator
 from xvc_util import Rectangle
 
 # constants
@@ -103,6 +103,8 @@ class XVCBot(object):
         logging.info('Bot command: /start')
         self.__status_thread = StatusThread(self.__vacuum)
         self.__status_thread.start()
+        if isinstance(self.__vacuum, XVCHelperSimulator):
+            update.message.reply_text('!!! Simulation !!!')
         update.message.reply_text('Main menu', reply_markup=self.__main_buttons)
         return MAIN_MENU
 
