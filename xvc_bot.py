@@ -55,12 +55,15 @@ class XVCBot(object):
         """
         self.__vacuum = vacuum
         self.__zones = zones
-        self.__main_buttons = ReplyKeyboardMarkup(XVCBot.build_menu(MAIN_BUTTONS),
-                                                  one_time_keyboard=True)
-        self.__fan_buttons = ReplyKeyboardMarkup(XVCBot.build_menu(FAN_BUTTONS, header_buttons=SKIP_BUTTON),
-                                                 one_time_keyboard=True)
-        self.__zone_buttons = ReplyKeyboardMarkup(XVCBot.build_menu([zone.title() for zone in self.__zones.keys()]),
-                                                  one_time_keyboard=True)
+        self.__main_buttons = ReplyKeyboardMarkup(
+            XVCBot.build_menu(MAIN_BUTTONS),
+            one_time_keyboard=True)
+        self.__fan_buttons = ReplyKeyboardMarkup(
+            XVCBot.build_menu(FAN_BUTTONS, header_buttons=SKIP_BUTTON),
+            one_time_keyboard=True)
+        self.__zone_buttons = ReplyKeyboardMarkup(
+            XVCBot.build_menu(sorted([zone.title() for zone in self.__zones.keys()])),
+            one_time_keyboard=True)
         self.__status_thread = None
 
     @staticmethod
