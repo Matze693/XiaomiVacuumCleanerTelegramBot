@@ -3,9 +3,9 @@ import logging
 from telegram.ext import ConversationHandler, Updater, CommandHandler, RegexHandler
 
 from access_manager import AccessManager
-from xml_parser import XMLParser
+from json_parser import ConfigurationParser
 from xvc_bot import XVCBot, MAIN_MENU, SELECT_FAN, SELECT_ZONE, FAN_BUTTONS, SKIP_BUTTON
-from xvc_helper import XVCHelper as VacuumHelper
+from xvc_helper import XVCHelperSimulator as VacuumHelper
 
 # constants
 LOG_FILE = 'bot.log'
@@ -26,12 +26,12 @@ logging.basicConfig(level=logging.NOTSET,
 # main program
 def main():
     # configuration
-    xml_parser = XMLParser('config.xml')
-    config_bot = xml_parser.parse_telegram_bot()
+    parser = ConfigurationParser('config.json')
+    config_bot = parser.parse_telegram_bot()
 
     AccessManager.add_users(config_bot.users.values())
 
-    config_xiaomi = xml_parser.parse_xiaomi_vacuum_cleaner_settings()
+    config_xiaomi = parser.parse_xiaomi_vacuum_cleaner_settings()
 
     vacuum = None
     try:
@@ -40,7 +40,7 @@ def main():
         logging.fatal(str(ex))
         exit()
 
-    zones = xml_parser.parse_zones()
+    zones = parser.parse_zones()
 
     xvc_bot = XVCBot(vacuum, zones)
 

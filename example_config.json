@@ -1,0 +1,117 @@
+{
+    "telegram_bot": {
+        "token": "TELEGRAM_BOT_TOKEN",
+        "users": [
+            {
+                "name": "User1 name",
+                "id": "123456789"
+            },
+            {
+                "name": "User2 name",
+                "id": "987654321"
+            }
+        ]
+    },
+
+    "xiaomi_vacuum_cleaner": {
+        "settings": {
+            "token": "XIAOMI_VACUUM_CLEANER_TOKEN",
+            "ip_address": "xxx.xxx.xxx.xxx"
+        },
+        "zone_cleaning": {
+            "zero_point_offset": {
+                "x": "1000",
+                "y": "2000"
+            },
+            "doors": [
+                {
+                    "name": "Door1",
+                    "bottom_left": {
+                        "x": "0",
+                        "y": "0"
+                    },
+                    "top_right": {
+                        "x": "1000",
+                        "y": "1000"
+                    }
+                },
+                {
+                    "name": "Door2",
+                    "bottom_left": {
+                        "x": "2000",
+                        "y": "2000"
+                    },
+                    "top_right": {
+                        "x": "3000",
+                        "y": "3000"
+                    }
+                }
+            ],
+            "rooms": [
+                {
+                    "name": "Room1",
+                    "bottom_left": {
+                        "x": "4000",
+                        "y": "4000"
+                    },
+                    "top_right": {
+                        "x": "5000",
+                        "y": "5000"
+                    }
+                },
+                {
+                    "name": "Room2",
+                    "bottom_left": {
+                        "x": "6000",
+                        "y": "6000"
+                    },
+                    "top_right": {
+                        "x": "7000",
+                        "y": "7000"
+                    }
+                }
+            ],
+            "areas": {
+                "area": {
+                    "name": "Area1",
+                    "bottom_left": {
+                        "x": "8000",
+                        "y": "8000"
+                    },
+                    "top_right": {
+                        "x": "9000",
+                        "y": "9000"
+                    }
+                }
+            },
+            "zones": [
+                {
+                    "name": "Zone1",
+                    "area": {
+                        "name": "Area1"
+                    }
+                },
+                {
+                    "name": "Zone2",
+                    "room": {
+                        "name": "Room1"
+                    }
+                },
+                {
+                    "name": "Zone3",
+                    "door": [
+                        {
+                            "name": "Door1"
+                        },
+                        {
+                            "name": "Door2"
+                        }
+                    ],
+                    "room": {
+                        "name": "Room2"
+                    }
+                }
+            ]
+        }
+    }
+}
