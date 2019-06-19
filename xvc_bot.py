@@ -31,12 +31,13 @@ class StatusThread(Thread):
         super().__init__()
         self.daemon = True
         self.__vacuum = vacuum
+        self.success = False
 
     def run(self) -> None:
         """
         Starts the thread.
         """
-        self.__vacuum.status()
+        self.success, _ = self.__vacuum.status()
 
 
 class XVCBot(object):
@@ -108,16 +109,21 @@ class XVCBot(object):
         update.message.reply_text('Main menu', reply_markup=self.__main_buttons)
         return MAIN_MENU
 
-    def __wait_for_status(self, update: Update) -> None:
+    def __wait_for_status(self, update: Update) -> bool:
         """
         Waits until status thread is finish.
 
         :param update: Bot update.
+        :return: True if connection could established.
         """
         if self.__status_thread is not None:
             if self.__status_thread.is_alive():
                 update.message.reply_text('Wait for status...', reply_markup=ReplyKeyboardRemove())
                 self.__status_thread.join()
+
+        if not self.__status_thread.success:
+            self.__finish(update, 'Cannot establish connection to vacuum cleaner!')
+        return self.__status_thread.success
 
     def status(self, _: Bot, update: Update) -> int:
         """
@@ -127,7 +133,8 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for conversation end.
         """
-        self.__wait_for_status(update)
+        if not self.__wait_for_status(update):
+            return ConversationHandler.END
         logging.info('Bot command: status')
         result, state = self.__vacuum.status()
         if result:
@@ -144,7 +151,8 @@ class XVCBot(object):
         :param update:  Bot update.
         :return: State for conversation end.
         """
-        self.__wait_for_status(update)
+        if not self.__wait_for_status(update):
+            return ConversationHandler.END
         logging.info('Bot command: home')
         if self.__vacuum.home():
             message = 'Vacuum cleaner goes back to the dock...'
@@ -160,7 +168,8 @@ class XVCBot(object):
         :param update: Bot update.
         :return: State for selecting fan speed.
         """
-        self.__wait_for_status(update)
+        if not self.__wait_for_status(update):
+            return ConversationHandler.END
         logging.info('Bot command: select fan')
         update.message.reply_text('Select fan speed!', reply_markup=self.__fan_buttons)
         return SELECT_FAN

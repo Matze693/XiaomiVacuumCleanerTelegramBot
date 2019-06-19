@@ -170,10 +170,15 @@ class XVCHelper(XVCHelperBase):
         Gets current status.
 
         :return: True on success, otherwise False.
-        :return:
+        :return: Vacuum status.
         """
-        vacuum_status = self.__vacuum.status()
-        return True, vacuum_status.state
+        vacuum_status = None
+        try:
+            vacuum_status = self.__vacuum.status().state
+            result = True
+        except DeviceException:
+            result = False
+        return result, vacuum_status
 
     def pause(self) -> bool:
         """
