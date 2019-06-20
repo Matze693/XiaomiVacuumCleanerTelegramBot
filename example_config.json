@@ -15,6 +15,7 @@
 
     "xiaomi_vacuum_cleaner": {
         "settings": {
+            "simulation": false,
             "token": "XIAOMI_VACUUM_CLEANER_TOKEN",
             "ip_address": "xxx.xxx.xxx.xxx"
         },

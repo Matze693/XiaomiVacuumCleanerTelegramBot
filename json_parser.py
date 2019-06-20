@@ -20,6 +20,7 @@ class Configuration(object):
         """
         Class to store configuration for Xiaomi Vacuum Cleaner.
         """
+        simulation = None
         token = None
         ip_address = None
 
@@ -65,6 +66,7 @@ class ConfigurationParser(object):
         :return: Xiaomi Vacuum Cleaner settings.
         """
         result = Configuration.XiaomiVacuumCleanerSettings()
+        result.simulation = self.__root['xiaomi_vacuum_cleaner']['settings']['simulation']
         result.token = self.__root['xiaomi_vacuum_cleaner']['settings']['token']
         result.ip_address = self.__root['xiaomi_vacuum_cleaner']['settings']['ip_address']
         return result
