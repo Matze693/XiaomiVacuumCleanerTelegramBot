@@ -87,19 +87,23 @@
             "zones": [
                 {
                     "name": "Zone1",
-                    "area": {
-                        "name": "Area1"
-                    }
+                    "areas": [
+                        {
+                            "name": "Area1"
+                        }
+                    ]
                 },
                 {
                     "name": "Zone2",
-                    "room": {
-                        "name": "Room1"
-                    }
+                    "rooms": [
+                        {
+                            "name": "Room1"
+                        }
+                    ]
                 },
                 {
                     "name": "Zone3",
-                    "door": [
+                    "doors": [
                         {
                             "name": "Door1"
                         },
@@ -107,9 +111,11 @@
                             "name": "Door2"
                         }
                     ],
-                    "room": {
-                        "name": "Room2"
-                    }
+                    "rooms": [
+                        {
+                            "name": "Room2"
+                        }
+                    ]
                 }
             ]
         }
