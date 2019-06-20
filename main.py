@@ -5,7 +5,7 @@ from telegram.ext import ConversationHandler, Updater, CommandHandler, RegexHand
 from access_manager import AccessManager
 from json_parser import ConfigurationParser
 from xvc_bot import XVCBot, MAIN_MENU, SELECT_FAN, SELECT_ZONE, FAN_BUTTONS, SKIP_BUTTON
-from xvc_helper import XVCHelperSimulator as VacuumHelper
+from xvc_helper import XVCHelper as VacuumHelper
 
 # constants
 LOG_FILE = 'bot.log'
