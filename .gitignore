@@ -7,7 +7,7 @@ __pycache__/
 *$py.class
 
 # Configuration
-config.xml
+config.json
 
 # Logging
 *.log
