@@ -1,5 +1,5 @@
 import json
-from typing import Any, Type, Dict, List
+from typing import Type, Dict, List
 
 from xvc_util import Point, Rectangle, Door, Room, Area
 
@@ -147,29 +147,28 @@ class ConfigurationParser(object):
             name = config_zone['name']
             elements = list()
 
-            if 'doors' in config_zone:
-                for door in config_zone['doors']:
-                    reference = door['name']
-                    if reference.upper() in doors:
-                        elements.append(doors[reference.upper()])
-                    else:
-                        raise Exception('Door "{}" does not exist!'.format(reference))
-
-            if 'rooms' in config_zone:
-                for room in config_zone['rooms']:
-                    reference = room['name']
-                    if reference.upper() in rooms:
-                        elements.append(rooms[reference.upper()])
-                    else:
-                        raise Exception('Room "{}" does not exist!'.format(reference))
-
-            if 'areas' in config_zone:
-                for area in config_zone['areas']:
-                    reference = area['name']
-                    if reference.upper() in areas:
-                        elements.append(areas[reference.upper()])
-                    else:
-                        raise Exception('Area "{}" does not exist!'.format(reference))
+            for key in config_zone.keys():
+                if key == 'doors':
+                    for door in config_zone[key]:
+                        reference = door['name']
+                        if reference.upper() in doors:
+                            elements.append(doors[reference.upper()])
+                        else:
+                            raise Exception('Door "{}" does not exist!'.format(reference))
+                if key == 'rooms':
+                    for room in config_zone[key]:
+                        reference = room['name']
+                        if reference.upper() in rooms:
+                            elements.append(rooms[reference.upper()])
+                        else:
+                            raise Exception('Room "{}" does not exist!'.format(reference))
+                if key == 'areas':
+                    for area in config_zone[key]:
+                        reference = area['name']
+                        if reference.upper() in areas:
+                            elements.append(areas[reference.upper()])
+                        else:
+                            raise Exception('Area "{}" does not exist!'.format(reference))
 
             zones[name.upper()] = elements
 
