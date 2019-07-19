@@ -205,9 +205,9 @@ class XVCHelper(XVCHelperBase):
         :param zones: Different zones to clean.
         :return: True on success, otherwise False.
         """
+        self.pause()
         zones_list = [zone.get_list() for zone in zones]
         result = self.__vacuum.zoned_clean(zones_list)
-        # self.pause()  # for debugging
         return result == XVCHelper.RESPONSE_SUCCEEDED
 
     def set_fan_level(self, fan_level: XVCHelperBase.FanLevel) -> bool:
