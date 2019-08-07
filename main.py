@@ -9,8 +9,11 @@ from xvc_helper import XVCHelper, XVCHelperSimulator
 
 # constants
 LOG_FILE = 'bot.log'
+LOG_DISABLE = 100
 
 # logging
+logging.getLogger('telegram').setLevel(LOG_DISABLE)
+
 console_logging = logging.StreamHandler()
 console_logging.setLevel(logging.ERROR)
 
