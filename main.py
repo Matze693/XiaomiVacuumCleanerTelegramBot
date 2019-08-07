@@ -15,7 +15,7 @@ console_logging = logging.StreamHandler()
 console_logging.setLevel(logging.ERROR)
 
 file_logging = logging.FileHandler(LOG_FILE)
-file_logging.setLevel(logging.WARNING)
+file_logging.setLevel(logging.NOTSET)
 
 logging.basicConfig(level=logging.NOTSET,
                     handlers=[console_logging, file_logging],
