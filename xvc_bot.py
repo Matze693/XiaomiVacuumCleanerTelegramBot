@@ -2,8 +2,8 @@ import logging
 from threading import Thread
 from typing import Dict, List
 
-from telegram import Bot, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import ConversationHandler
+from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram.ext import ConversationHandler, CallbackContext
 
 from access_manager import AccessManager
 from xvc_helper import XVCHelperBase, XVCHelperSimulator
@@ -96,12 +96,12 @@ class XVCBot(object):
         return ConversationHandler.END
 
     @AccessManager()
-    def start(self, _: Bot, update: Update) -> int:
+    def start(self, update: Update, _: CallbackContext) -> int:
         """
         Starts the conversation with the main menu.
 
-        :param _: Unused parameter.
         :param update: Bot update.
+        :param _: Unused parameter.
         :return: State for main menu.
         """
         logging.info('Bot command: /start')
@@ -128,12 +128,12 @@ class XVCBot(object):
             self.__finish(update, 'Cannot establish connection to vacuum cleaner!')
         return self.__status_thread.success
 
-    def status(self, _: Bot, update: Update) -> int:
+    def status(self, update: Update, _: CallbackContext) -> int:
         """
         Reads the current status of the vacuum cleaner.
 
-        :param _: Unused parameter.
         :param update: Bot update.
+        :param _: Unused parameter.
         :return: State for conversation end.
         """
         if not self.__wait_for_status(update):
@@ -146,12 +146,12 @@ class XVCBot(object):
             message = 'Error'
         return self.__finish(update, message)
 
-    def home(self, _: Bot, update: Update) -> int:
+    def home(self, update: Update, _: CallbackContext) -> int:
         """
         Stops cleaning and sends vacuum cleaner back to the dock.
 
-        :param _: Unused parameter.
         :param update:  Bot update.
+        :param _: Unused parameter.
         :return: State for conversation end.
         """
         if not self.__wait_for_status(update):
@@ -163,12 +163,12 @@ class XVCBot(object):
             message = 'Error'
         return self.__finish(update, message)
 
-    def select_fan(self, _: Bot, update: Update) -> int:
+    def select_fan(self, update: Update, _: CallbackContext) -> int:
         """
         Creates the menu for fan speed.
 
-        :param _: Unused parameter.
         :param update: Bot update.
+        :param _: Unused parameter.
         :return: State for selecting fan speed.
         """
         if not self.__wait_for_status(update):
@@ -177,12 +177,12 @@ class XVCBot(object):
         update.message.reply_text('Select fan speed!', reply_markup=self.__fan_buttons)
         return SELECT_FAN
 
-    def select_zone(self, _: Bot, update: Update) -> int:
+    def select_zone(self, update: Update, _: CallbackContext) -> int:
         """
         Creates the menu for cleaning zones.
 
-        :param _: Unused parameter.
         :param update: Bot update.
+        :param _: Unused parameter.
         :return: State for selecting cleaning zone.
         """
         logging.info('Bot command: select zone')
@@ -192,12 +192,12 @@ class XVCBot(object):
         update.message.reply_text('Select zone!', reply_markup=self.__zone_buttons)
         return SELECT_ZONE
 
-    def cleaning(self, _: Bot, update: Update) -> int:
+    def cleaning(self, update: Update, _: CallbackContext) -> int:
         """
         Starts cleaning.
 
-        :param _: Unused parameter.
         :param update: Bot update.
+        :param _: Unused parameter.
         :return: State for conversation end.
         """
         logging.info('Bot command: cleaning')
@@ -208,12 +208,12 @@ class XVCBot(object):
             message = 'Error'
         return self.__finish(update, message)
 
-    def cancel(self, _: Bot, update: Update) -> int:
+    def cancel(self, update: Update, _: CallbackContext) -> int:
         """
         Cancels the current conversation.
 
-        :param _: Unused parameter.
         :param update: Bot update.
+        :param _: Unused parameter.
         :return: State for conversation end.
         """
         logging.info('Bot command: cancel')

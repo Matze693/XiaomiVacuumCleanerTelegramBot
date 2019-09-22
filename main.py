@@ -1,6 +1,6 @@
 import logging
 
-from telegram.ext import ConversationHandler, Updater, CommandHandler, RegexHandler
+from telegram.ext import ConversationHandler, Updater, CommandHandler, MessageHandler, Filters
 
 from access_manager import AccessManager
 from json_parser import ConfigurationParser
@@ -50,22 +50,22 @@ def main():
 
     xvc_bot = XVCBot(vacuum, zones)
 
-    updater = Updater(token=config_bot.token)
+    updater = Updater(token=config_bot.token, use_context=True)
     dispatcher = updater.dispatcher
 
     conversation_handler = ConversationHandler(
         entry_points=[CommandHandler('start', xvc_bot.start)],
         states={
-            MAIN_MENU: [RegexHandler('^({})$'.format('Status'),
-                                     xvc_bot.status),
-                        RegexHandler('^({})$'.format('Home'),
-                                     xvc_bot.home),
-                        RegexHandler('^({})$'.format('ZoneCleaning'),
-                                     xvc_bot.select_fan)],
-            SELECT_FAN: [RegexHandler('^({})$'.format('|'.join(FAN_BUTTONS + SKIP_BUTTON)),
-                                      xvc_bot.select_zone)],
-            SELECT_ZONE: [RegexHandler('^({})$'.format('|'.join([zone.title() for zone in zones.keys()])),
-                                       xvc_bot.cleaning)]
+            MAIN_MENU: [MessageHandler(Filters.regex('^({})$'.format('Status')),
+                                       xvc_bot.status),
+                        MessageHandler(Filters.regex('^({})$'.format('Home')),
+                                       xvc_bot.home),
+                        MessageHandler(Filters.regex('^({})$'.format('ZoneCleaning')),
+                                       xvc_bot.select_fan)],
+            SELECT_FAN: [MessageHandler(Filters.regex('^({})$'.format('|'.join(FAN_BUTTONS + SKIP_BUTTON))),
+                                        xvc_bot.select_zone)],
+            SELECT_ZONE: [MessageHandler(Filters.regex('^({})$'.format('|'.join([zone.title() for zone in zones.keys()]))),
+                                         xvc_bot.cleaning)]
         },
         fallbacks=[CommandHandler('cancel', xvc_bot.cancel)]
     )
