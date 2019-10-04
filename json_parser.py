@@ -1,7 +1,9 @@
 import json
 from typing import Type, Dict, List
 
-from xvc_util import Point, Rectangle, Door, Room, Area
+from utility.point import Point
+from utility.rectangle import Rectangle
+from xvc.cleaning_zone import CleaningZone, Door, Room, Area
 
 
 class Configuration(object):
@@ -84,13 +86,13 @@ class ConfigurationParser(object):
 
         return Point(x, y)
 
-    def __parse_rectangle(self, type_name: str, _type: Type[Rectangle]) -> Dict[str, Rectangle]:
+    def __parse_cleaning_zone(self, type_name: str, _type: Type[CleaningZone]) -> Dict[str, CleaningZone]:
         """
-        Parses a rectangle type from the configuration.
+        Parses a cleaning zone type from the configuration.
 
-        :param type_name: Name of the rectangle type.
-        :param _type: Rectangle type.
-        :return: Dictionary with the rectangles.
+        :param type_name: Name of the cleaning zone type.
+        :param _type: Cleaning zone type.
+        :return: Dictionary with the cleaning zones.
         """
         offset = self.parse_offset()
 
@@ -105,35 +107,36 @@ class ConfigurationParser(object):
             config_top_right = element['top_right']
             top_right = Point(config_top_right['x'] + offset.x,
                               config_top_right['y'] + offset.y)
-            result[str(name.upper())] = _type(bottom_left, top_right, name)
+            rectangle = Rectangle(bottom_left, top_right)
+            result[str(name.upper())] = _type(rectangle)
 
         return result
 
-    def parse_doors(self) -> Dict[str, Rectangle]:
+    def parse_doors(self) -> Dict[str, CleaningZone]:
         """
         Parses the doors from the configuration.
 
         :return: Dictionary with doors.
         """
-        return self.__parse_rectangle('doors', Door)
+        return self.__parse_cleaning_zone('doors', Door)
 
-    def parse_rooms(self) -> Dict[str, Rectangle]:
+    def parse_rooms(self) -> Dict[str, CleaningZone]:
         """
         Parses the rooms from the configuration.
 
         :return: Dictionary with rooms.
         """
-        return self.__parse_rectangle('rooms', Room)
+        return self.__parse_cleaning_zone('rooms', Room)
 
-    def parse_areas(self) -> Dict[str, Rectangle]:
+    def parse_areas(self) -> Dict[str, CleaningZone]:
         """
         Parses the areas from the configuration.
 
         :return: Dictionary with areas.
         """
-        return self.__parse_rectangle('areas', Area)
+        return self.__parse_cleaning_zone('areas', Area)
 
-    def parse_zones(self) -> Dict[str, List[Rectangle]]:
+    def parse_zones(self) -> Dict[str, List[CleaningZone]]:
         """
         Parses the cleaning zones from the configuration.
 

@@ -6,13 +6,14 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ConversationHandler, CallbackContext
 
 from access_manager import AccessManager
+from xvc.cleaning_zone import CleaningZone
+from xvc.fan_level import FanLevel
 from xvc_helper import XVCHelperBase, XVCHelperSimulator
-from xvc_util import Rectangle
 
 # constants
 SKIP_BUTTON = ['Skip']
 MAIN_BUTTONS = ['Status', 'Home', 'ZoneCleaning']
-FAN_BUTTONS = [value.name for value in XVCHelperBase.FanLevel]
+FAN_BUTTONS = [value.name for value in FanLevel]
 
 MAIN_MENU, SELECT_FAN, SELECT_ZONE = range(3)
 
@@ -45,7 +46,7 @@ class XVCBot(object):
     Xiaomi Vacuum Cleaner Bot.
     """
 
-    def __init__(self, vacuum: XVCHelperBase, zones: Dict[str, List[Rectangle]]):
+    def __init__(self, vacuum: XVCHelperBase, zones: Dict[str, List[CleaningZone]]):
         """
         Initializes the Xiaomi Vacuum Cleaner Bot.
         This bot is used as an conversation bot with various states.
@@ -188,7 +189,7 @@ class XVCBot(object):
         logging.info('Bot command: select zone')
         level = update.message.text
         if level != SKIP_BUTTON[0]:
-            self.__vacuum.set_fan_level(XVCHelperBase.FanLevel[level])
+            self.__vacuum.set_fan_level(FanLevel[level])
         update.message.reply_text('Select zone!', reply_markup=self.__zone_buttons)
         return SELECT_ZONE
 

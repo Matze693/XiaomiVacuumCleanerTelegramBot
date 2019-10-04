@@ -15,7 +15,7 @@ LOG_DISABLE = 100
 logging.getLogger('telegram').setLevel(LOG_DISABLE)
 
 console_logging = logging.StreamHandler()
-console_logging.setLevel(logging.ERROR)
+console_logging.setLevel(logging.WARNING)
 
 file_logging = logging.FileHandler(LOG_FILE)
 file_logging.setLevel(logging.NOTSET)
@@ -64,8 +64,9 @@ def main():
                                        xvc_bot.select_fan)],
             SELECT_FAN: [MessageHandler(Filters.regex('^({})$'.format('|'.join(FAN_BUTTONS + SKIP_BUTTON))),
                                         xvc_bot.select_zone)],
-            SELECT_ZONE: [MessageHandler(Filters.regex('^({})$'.format('|'.join([zone.title() for zone in zones.keys()]))),
-                                         xvc_bot.cleaning)]
+            SELECT_ZONE: [
+                MessageHandler(Filters.regex('^({})$'.format('|'.join([zone.title() for zone in zones.keys()]))),
+                               xvc_bot.cleaning)]
         },
         fallbacks=[CommandHandler('cancel', xvc_bot.cancel)]
     )

@@ -1,27 +1,17 @@
 import logging
 from abc import abstractmethod, ABCMeta
-from enum import Enum
 from typing import List, Tuple
 
 from miio import Vacuum, DeviceException
 
-from xvc_util import XVCListable
+from xvc.cleaning_zone import CleaningZone
+from xvc.fan_level import FanLevel
 
 
 class XVCHelperBase(metaclass=ABCMeta):
     """
     Helper class to abstract and simplify vacuum methods.
     """
-
-    class FanLevel(Enum):
-        """
-        Enum for distinct fan levels.
-        """
-        Quiet = 38
-        Balanced = 60
-        Turbo = 75
-        Max = 100
-        Mob = 105
 
     RESPONSE_SUCCEEDED = ['ok']
 
@@ -54,7 +44,7 @@ class XVCHelperBase(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    def start_zone_cleaning(self, zones: List[XVCListable]) -> bool:
+    def start_zone_cleaning(self, zones: List[CleaningZone]) -> bool:
         """
         Start the zone cleanup.
 
@@ -118,7 +108,7 @@ class XVCHelperSimulator(XVCHelperBase):
         logging.info('Simulation: home()')
         return True
 
-    def start_zone_cleaning(self, zones: List[XVCListable]) -> bool:
+    def start_zone_cleaning(self, zones: List[CleaningZone]) -> bool:
         """
         Start the zone cleanup.
 
@@ -130,7 +120,7 @@ class XVCHelperSimulator(XVCHelperBase):
             logging.info('Simulation: {}'.format(zone))
         return True
 
-    def set_fan_level(self, fan_level: XVCHelperBase.FanLevel) -> bool:
+    def set_fan_level(self, fan_level: FanLevel) -> bool:
         """
         Sets the fan level.
 
@@ -198,7 +188,7 @@ class XVCHelper(XVCHelperBase):
         result = self.__vacuum.home()
         return result == XVCHelper.RESPONSE_SUCCEEDED
 
-    def start_zone_cleaning(self, zones: List[XVCListable]) -> bool:
+    def start_zone_cleaning(self, zones: List[CleaningZone]) -> bool:
         """
         Start the zone cleanup.
 
@@ -210,7 +200,7 @@ class XVCHelper(XVCHelperBase):
         result = self.__vacuum.zoned_clean(zones_list)
         return result == XVCHelper.RESPONSE_SUCCEEDED
 
-    def set_fan_level(self, fan_level: XVCHelperBase.FanLevel) -> bool:
+    def set_fan_level(self, fan_level: FanLevel) -> bool:
         """
         Sets the fan level.
 
