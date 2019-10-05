@@ -1,11 +1,13 @@
 import logging
 
+from miio import Vacuum
 from telegram.ext import ConversationHandler, Updater, CommandHandler, MessageHandler, Filters
 
 from access_manager import AccessManager
 from json_parser import ConfigurationParser
+from xvc.vacuum_mock import VacuumMock
+from xvc.vacuum_wrapper import VacuumWrapper
 from xvc_bot import XVCBot, MAIN_MENU, SELECT_FAN, SELECT_ZONE, FAN_BUTTONS, SKIP_BUTTON
-from xvc_helper import XVCHelper, XVCHelperSimulator
 
 # constants
 LOG_FILE = 'bot.log'
@@ -39,9 +41,9 @@ def main():
     vacuum = None
     try:
         if config_xiaomi.simulation:
-            vacuum = XVCHelperSimulator(config_xiaomi.ip_address, config_xiaomi.token)
+            vacuum = VacuumWrapper(VacuumMock())
         else:
-            vacuum = XVCHelper(config_xiaomi.ip_address, config_xiaomi.token)
+            vacuum = VacuumWrapper(Vacuum(config_xiaomi.ip_address, config_xiaomi.token, start_id=1))
     except ConnectionError as ex:
         logging.fatal(str(ex))
         exit()

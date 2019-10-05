@@ -12,7 +12,6 @@
             }
         ]
     },
-
     "xiaomi_vacuum_cleaner": {
         "settings": {
             "simulation": false,

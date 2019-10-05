@@ -1,9 +1,13 @@
 from unittest import TestCase
+from unittest.mock import Mock
+
+from miio import DeviceException
 
 from utility.point import Point
 from utility.rectangle import Rectangle
 from xvc.cleaning_zone import CleaningZone, Door, Room, Area
 from xvc.fan_level import FanLevel
+from xvc.vacuum_wrapper import VacuumWrapper
 
 
 class __PointTest(TestCase):
@@ -77,3 +81,11 @@ class __AreaTest(TestCase):
         door = Area(Rectangle(Point(1, 2), Point(3, 4)), 3)
         self.assertEqual(3, door.iterations)
         self.assertEqual(FanLevel.Balanced, door.fan_level)
+
+
+class __VacuumWrapperTest(TestCase):
+
+    def test_init(self):
+        vacuum = Mock()
+        vacuum.do_discover = Mock(side_effect=DeviceException())
+        self.assertRaises(ConnectionError, lambda: VacuumWrapper(vacuum))

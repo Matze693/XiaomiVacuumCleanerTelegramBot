@@ -8,7 +8,7 @@ from telegram.ext import ConversationHandler, CallbackContext
 from access_manager import AccessManager
 from xvc.cleaning_zone import CleaningZone
 from xvc.fan_level import FanLevel
-from xvc_helper import XVCHelperBase, XVCHelperSimulator
+from xvc.vacuum_wrapper import VacuumWrapper
 
 # constants
 SKIP_BUTTON = ['Skip']
@@ -23,7 +23,7 @@ class StatusThread(Thread):
     Simple thread to get actual status from the vacuum cleaner.
     """
 
-    def __init__(self, vacuum: XVCHelperBase) -> None:
+    def __init__(self, vacuum: VacuumWrapper) -> None:
         """
         Initializes the thread to get actual status.
 
@@ -46,7 +46,7 @@ class XVCBot(object):
     Xiaomi Vacuum Cleaner Bot.
     """
 
-    def __init__(self, vacuum: XVCHelperBase, zones: Dict[str, List[CleaningZone]]):
+    def __init__(self, vacuum: VacuumWrapper, zones: Dict[str, List[CleaningZone]]):
         """
         Initializes the Xiaomi Vacuum Cleaner Bot.
         This bot is used as an conversation bot with various states.
@@ -108,8 +108,6 @@ class XVCBot(object):
         logging.info('Bot command: /start')
         self.__status_thread = StatusThread(self.__vacuum)
         self.__status_thread.start()
-        if isinstance(self.__vacuum, XVCHelperSimulator):
-            update.message.reply_text('!!! Simulation !!!')
         update.message.reply_text('Main menu', reply_markup=self.__main_buttons)
         return MAIN_MENU
 
